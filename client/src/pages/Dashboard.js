@@ -30,7 +30,7 @@ function DashboardContent() {
 
   useEffect(() => {
     loadProgress();
-  }, [loadProgress]);
+  }, []);
 
   const handleAddProgress = async (e) => {
     e.preventDefault();
