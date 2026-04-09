@@ -6,29 +6,16 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
 
-    if (!email || !password) {
-      setErrorMessage("Email and password are required");
-      return;
-    }
-
-    if (!email.includes("@")) {
-      setErrorMessage("Please enter a valid email");
-      return;
-    }
-
     try {
       const res = await loginUser({ email, password });
-
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
-
       navigate("/dashboard");
     } catch (error) {
       setErrorMessage(error.response?.data?.message || "Something went wrong");
@@ -38,19 +25,19 @@ function Login() {
   return (
     <section className="auth-section py-5">
       <div className="container">
-        <div className="row justify-content-center align-items-center min-vh-75">
+        <div className="row justify-content-center align-items-center">
           <div className="col-lg-5 col-md-7">
-            <div className="card auth-card shadow-lg border-0 rounded-4">
+            <div className="card auth-card border-0 rounded-4">
               <div className="card-body p-4 p-md-5">
                 <div className="text-center mb-4">
-                  <h2 className="fw-bold">Welcome Back</h2>
+                  <h2 className="fw-bold text-white">Welcome Back</h2>
                   <p className="text-muted mb-0">
-                    Login to continue your fitness journey
+                    Login to continue your 12Fit journey
                   </p>
                 </div>
 
                 {errorMessage && (
-                  <div className="alert alert-danger rounded-3">
+                  <div className="alert alert-danger rounded-4">
                     {errorMessage}
                   </div>
                 )}
@@ -84,7 +71,7 @@ function Login() {
                 </form>
 
                 <p className="text-center mt-4 mb-0 text-muted">
-                  Don't have an account? <Link to="/register">Register</Link>
+                  Don&apos;t have an account? <Link to="/register">Register</Link>
                 </p>
               </div>
             </div>
