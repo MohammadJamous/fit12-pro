@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getUsersWithPlans, deleteUser } from "../services/userService";
+import { getUsersWithPlans, deleteUser } from "../services/authService";
 
 function Dashboard() {
   const token = localStorage.getItem("token");
