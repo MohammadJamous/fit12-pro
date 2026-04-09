@@ -13,8 +13,8 @@ function Navbar() {
 
   const [notifications] = useState([
     "Welcome to 12Fit",
+    "Your fitness plan is ready",
     "Check your dashboard updates",
-    "Your plan is ready",
   ]);
 
   useEffect(() => {
@@ -36,15 +36,15 @@ function Navbar() {
   const isActive = (path) => (location.pathname === path ? "active-link" : "");
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-3 sticky-top custom-navbar">
+    <nav className="navbar navbar-expand-lg shadow-sm py-3 sticky-top custom-navbar">
       <div className="container">
         <Link className="navbar-brand d-flex align-items-center" to="/">
           <img src={logo} alt="logo" className="navbar-logo" />
-          <span className="fw-bold text-primary">12Fit</span>
+          <span className="fw-bold text-white">12Fit</span>
         </Link>
 
         <button
-          className="navbar-toggler"
+          className="navbar-toggler border-0 shadow-none"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbar"
@@ -63,33 +63,29 @@ function Navbar() {
               </Link>
             </li>
 
-            {user && (
-              <>
-                <li className="nav-item">
-                  <Link className={`nav-link ${isActive("/workout")}`} to="/workout">
-                    Workout
-                  </Link>
-                </li>
+            <li className="nav-item">
+              <Link className={`nav-link ${isActive("/dashboard")}`} to="/dashboard">
+                Dashboard
+              </Link>
+            </li>
 
-                <li className="nav-item">
-                  <Link className={`nav-link ${isActive("/diet")}`} to="/diet">
-                    Diet
-                  </Link>
-                </li>
+            <li className="nav-item">
+              <Link className={`nav-link ${isActive("/workout")}`} to="/workout">
+                Workout
+              </Link>
+            </li>
 
-                <li className="nav-item">
-                  <Link className={`nav-link ${isActive("/products")}`} to="/products">
-                    Products
-                  </Link>
-                </li>
+            <li className="nav-item">
+              <Link className={`nav-link ${isActive("/diet")}`} to="/diet">
+                Diet
+              </Link>
+            </li>
 
-                <li className="nav-item">
-                  <Link className={`nav-link ${isActive("/dashboard")}`} to="/dashboard">
-                    Dashboard
-                  </Link>
-                </li>
-              </>
-            )}
+            <li className="nav-item">
+              <Link className={`nav-link ${isActive("/products")}`} to="/products">
+                Products
+              </Link>
+            </li>
           </ul>
 
           <div className="d-flex align-items-lg-center flex-column flex-lg-row gap-2 gap-lg-3 mt-3 mt-lg-0 navbar-actions">
@@ -101,70 +97,28 @@ function Navbar() {
               {darkMode ? "☀️" : "🌙"}
             </button>
 
-            {user ? (
-              <>
-                <div className="dropdown w-100 w-lg-auto">
-                  <button
-                    className="btn btn-outline-warning btn-sm dropdown-toggle w-100 w-lg-auto"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    🔔 Notifications
-                  </button>
+            <div className="dropdown w-100 w-lg-auto">
+              <button
+                className="btn btn-outline-light btn-sm dropdown-toggle w-100 w-lg-auto"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                🔔 Notifications
+              </button>
 
-                  <ul className="dropdown-menu dropdown-menu-end shadow border-0 rounded-4">
-                    {notifications.map((item, index) => (
-                      <li key={index}>
-                        <span className="dropdown-item-text px-3 py-2 d-block">
-                          {item}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <ul className="dropdown-menu dropdown-menu-end shadow border-0 rounded-4">
+                {notifications.map((item, index) => (
+                  <li key={index}>
+                    <span className="dropdown-item-text px-3 py-2 d-block">
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-                <div className="dropdown w-100 w-lg-auto">
-                  <button
-                    className="btn btn-outline-info btn-sm dropdown-toggle w-100 w-lg-auto"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    👤 {user.name}
-                  </button>
-
-                  <ul className="dropdown-menu dropdown-menu-end shadow border-0 rounded-4">
-                    <li>
-                      <span className="dropdown-item-text px-3 py-2 d-block">
-                        {user.email}
-                      </span>
-                    </li>
-                    <li>
-                      <span className="dropdown-item-text px-3 py-2 d-block">
-                        Role: {user.role}
-                      </span>
-                    </li>
-                    <li>
-                      <hr className="dropdown-divider" />
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/dashboard">
-                        Dashboard
-                      </Link>
-                    </li>
-                    <li>
-                      <button
-                        className="dropdown-item text-danger"
-                        onClick={handleLogout}
-                      >
-                        Logout
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </>
-            ) : (
+            {!user ? (
               <>
                 <Link className="btn btn-outline-light w-100 w-lg-auto" to="/login">
                   Login
@@ -174,6 +128,46 @@ function Navbar() {
                   Register
                 </Link>
               </>
+            ) : (
+              <div className="dropdown w-100 w-lg-auto">
+                <button
+                  className="btn btn-outline-info btn-sm dropdown-toggle w-100 w-lg-auto"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  👤 {user.name}
+                </button>
+
+                <ul className="dropdown-menu dropdown-menu-end shadow border-0 rounded-4">
+                  <li>
+                    <span className="dropdown-item-text px-3 py-2 d-block">
+                      {user.email}
+                    </span>
+                  </li>
+                  <li>
+                    <span className="dropdown-item-text px-3 py-2 d-block">
+                      Role: {user.role}
+                    </span>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/dashboard">
+                      Dashboard
+                    </Link>
+                  </li>
+                  <li>
+                    <button
+                      className="dropdown-item text-danger"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
             )}
           </div>
         </div>
