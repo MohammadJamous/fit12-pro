@@ -63,11 +63,16 @@ function Navbar() {
               </Link>
             </li>
 
-            <li className="nav-item">
-              <Link className={`nav-link ${isActive("/dashboard")}`} to="/dashboard">
-                Dashboard
-              </Link>
-            </li>
+            {user?.role === "admin" && (
+              <li className="nav-item">
+                <Link
+                  className={`nav-link ${isActive("/dashboard")}`}
+                  to="/dashboard"
+                >
+                  Dashboard
+                </Link>
+              </li>
+            )}
 
             <li className="nav-item">
               <Link className={`nav-link ${isActive("/workout")}`} to="/workout">
@@ -153,11 +158,15 @@ function Navbar() {
                   <li>
                     <hr className="dropdown-divider" />
                   </li>
-                  <li>
-                    <Link className="dropdown-item" to="/dashboard">
-                      Dashboard
-                    </Link>
-                  </li>
+
+                  {user?.role === "admin" && (
+                    <li>
+                      <Link className="dropdown-item" to="/dashboard">
+                        Dashboard
+                      </Link>
+                    </li>
+                  )}
+
                   <li>
                     <button
                       className="dropdown-item text-danger"
