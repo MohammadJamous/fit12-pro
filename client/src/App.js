@@ -10,6 +10,7 @@ import Products from "./pages/Products";
 
 import PublicOnlyRoute from "./components/PublicOnlyRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 function App() {
@@ -44,9 +45,9 @@ function App() {
             <Route
               path="/dashboard"
               element={
-                <ProtectedRoute>
+                <AdminRoute>
                   <Dashboard />
-                </ProtectedRoute>
+                </AdminRoute>
               }
             />
 
