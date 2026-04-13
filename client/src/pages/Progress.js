@@ -7,7 +7,6 @@ function Progress() {
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState("");
 
- 
   const [goal, setGoal] = useState(null);
   const [goalWeight, setGoalWeight] = useState("");
   const [goalDate, setGoalDate] = useState("");
@@ -24,7 +23,7 @@ function Progress() {
     try {
       const res = await getProgress();
       setProgressList(res.data);
-      
+
       const savedGoal = localStorage.getItem("progressGoal");
       if (savedGoal) {
         setGoal(JSON.parse(savedGoal));
@@ -66,7 +65,7 @@ function Progress() {
 
   const handleAddProgress = async (e) => {
     e.preventDefault();
-    
+
     if (!weight) {
       setMessage("Please enter your weight");
       setMessageType("danger");
@@ -113,7 +112,7 @@ function Progress() {
       await addProgress(progressData);
       setMessage("Progress added successfully");
       setMessageType("success");
-      
+
       setWeight("");
       setChestMeasurement("");
       setWaistMeasurement("");
@@ -123,7 +122,7 @@ function Progress() {
       setNotes("");
       setGoalWeight("");
       setGoalDate("");
-      
+
       loadProgress();
     } catch (error) {
       setMessage("Failed to add progress: " + (error.response?.data?.message || "Something went wrong"));
@@ -138,7 +137,7 @@ function Progress() {
   const calculateStats = () => {
     if (progressList.length < 2) return null;
 
-    const weights = progressList.map(p => parseFloat(p.weight)).sort((a, b) => a - b);
+    const weights = progressList.map((p) => parseFloat(p.weight)).sort((a, b) => a - b);
     const latestWeight = weights[0];
     const oldestWeight = weights[weights.length - 1];
     const avgWeight = weights.reduce((a, b) => a + b) / weights.length;
@@ -169,16 +168,19 @@ function Progress() {
         <div className="col-lg-8">
           <div
             style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              borderRadius: '24px',
-              padding: '40px',
-              backdropFilter: 'blur(18px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.35)',
+              background: "rgba(255, 255, 255, 0.05)",
+              borderRadius: "24px",
+              padding: "40px",
+              backdropFilter: "blur(18px)",
+              border: "1px solid rgba(255, 255, 255, 0.15)",
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.35)",
             }}
           >
             <h3 className="text-white fw-bold mb-4 text-center">Progress Entry</h3>
-            <p className="text-muted text-center mb-4">Set your goal here if you want, then add a progress entry with one button.</p>
+            <p className="text-muted text-center mb-4">
+              Set your goal here if you want, then add a progress entry with one button.
+            </p>
+
             <form onSubmit={handleAddProgress}>
               <div className="row g-3 mb-4">
                 <div className="col-md-6">
@@ -193,6 +195,7 @@ function Progress() {
                     disabled={loading}
                   />
                 </div>
+
                 <div className="col-md-6">
                   <label className="form-label text-light">Target Date</label>
                   <input
@@ -205,6 +208,7 @@ function Progress() {
                   />
                 </div>
               </div>
+
               <div className="row g-3">
                 <div className="col-md-6">
                   <label className="form-label text-light">Weight (kg) *</label>
@@ -219,6 +223,7 @@ function Progress() {
                     required
                   />
                 </div>
+
                 <div className="col-md-6">
                   <label className="form-label text-light">Chest (cm)</label>
                   <input
@@ -231,6 +236,7 @@ function Progress() {
                     disabled={loading}
                   />
                 </div>
+
                 <div className="col-md-6">
                   <label className="form-label text-light">Waist (cm)</label>
                   <input
@@ -243,6 +249,7 @@ function Progress() {
                     disabled={loading}
                   />
                 </div>
+
                 <div className="col-md-6">
                   <label className="form-label text-light">Hips (cm)</label>
                   <input
@@ -255,6 +262,7 @@ function Progress() {
                     disabled={loading}
                   />
                 </div>
+
                 <div className="col-md-6">
                   <label className="form-label text-light">Arms (cm)</label>
                   <input
@@ -267,6 +275,7 @@ function Progress() {
                     disabled={loading}
                   />
                 </div>
+
                 <div className="col-md-6">
                   <label className="form-label text-light">Body Fat (%)</label>
                   <input
@@ -279,6 +288,7 @@ function Progress() {
                     disabled={loading}
                   />
                 </div>
+
                 <div className="col-12">
                   <label className="form-label text-light">Notes</label>
                   <textarea
@@ -290,6 +300,14 @@ function Progress() {
                     disabled={loading}
                   ></textarea>
                 </div>
+
+                {/* إضافة بسيطة فقط لاستخدام calculateBMI */}
+                <div className="col-12">
+                  <p className="text-light mb-0">
+                    <strong>BMI:</strong> {calculateBMI(weight, 1.75) || "-"}
+                  </p>
+                </div>
+
                 <div className="col-12 d-flex justify-content-center">
                   <button
                     type="submit"
@@ -311,18 +329,17 @@ function Progress() {
         </div>
       </div>
 
-      {/* Goal Progress Display */}
       {goal && (
         <div className="row justify-content-center mb-5">
           <div className="col-lg-6">
             <div
               style={{
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderRadius: '24px',
-                padding: '40px',
-                backdropFilter: 'blur(18px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.35)',
+                background: "rgba(255, 255, 255, 0.05)",
+                borderRadius: "24px",
+                padding: "40px",
+                backdropFilter: "blur(18px)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+                boxShadow: "0 20px 50px rgba(0, 0, 0, 0.35)",
               }}
             >
               <h3 className="text-white fw-bold mb-4 text-center">Goal Progress</h3>
@@ -330,9 +347,14 @@ function Progress() {
                 <>
                   <div className="mb-3">
                     <div className="d-flex justify-content-between mb-2">
-                      <span className="text-light">Progress: {goalProgress.percentage.toFixed(0)}%</span>
-                      {goalProgress.isGoalReached && <span className="badge bg-success">Goal Reached! 🎉</span>}
+                      <span className="text-light">
+                        Progress: {goalProgress.percentage.toFixed(0)}%
+                      </span>
+                      {goalProgress.isGoalReached && (
+                        <span className="badge bg-success">Goal Reached! 🎉</span>
+                      )}
                     </div>
+
                     <div className="progress" style={{ height: "25px" }}>
                       <div
                         className="progress-bar bg-success"
@@ -343,11 +365,20 @@ function Progress() {
                       </div>
                     </div>
                   </div>
+
                   <div className="text-light small">
-                    <p className="mb-1">Start: <strong>{goalProgress.startWeight} kg</strong></p>
-                    <p className="mb-1">Current: <strong>{goalProgress.currentWeight} kg</strong></p>
-                    <p className="mb-1">Target: <strong>{goalProgress.targetWeight} kg</strong></p>
-                    <p className="mb-0">Remaining: <strong>{goalProgress.remaining.toFixed(1)} kg</strong></p>
+                    <p className="mb-1">
+                      Start: <strong>{goalProgress.startWeight} kg</strong>
+                    </p>
+                    <p className="mb-1">
+                      Current: <strong>{goalProgress.currentWeight} kg</strong>
+                    </p>
+                    <p className="mb-1">
+                      Target: <strong>{goalProgress.targetWeight} kg</strong>
+                    </p>
+                    <p className="mb-0">
+                      Remaining: <strong>{goalProgress.remaining.toFixed(1)} kg</strong>
+                    </p>
                   </div>
                 </>
               ) : (
@@ -358,7 +389,6 @@ function Progress() {
         </div>
       )}
 
-      {/* Statistics Section */}
       {stats && (
         <div className="row g-4 mb-5">
           <div className="col-md-3">
@@ -367,18 +397,23 @@ function Progress() {
               <h4 className="text-white fw-bold">{stats.totalChange} kg</h4>
             </div>
           </div>
+
           <div className="col-md-3">
             <div className="card bg-dark border-light rounded-4 p-3 text-center">
               <p className="text-muted small mb-1">Average Weight</p>
               <h4 className="text-white fw-bold">{stats.avgWeight} kg</h4>
             </div>
           </div>
+
           <div className="col-md-3">
             <div className="card bg-dark border-light rounded-4 p-3 text-center">
               <p className="text-muted small mb-1">Range</p>
-              <h4 className="text-white fw-bold">{stats.minWeight} - {stats.maxWeight}</h4>
+              <h4 className="text-white fw-bold">
+                {stats.minWeight} - {stats.maxWeight}
+              </h4>
             </div>
           </div>
+
           <div className="col-md-3">
             <div className="card bg-dark border-light rounded-4 p-3 text-center">
               <p className="text-muted small mb-1">Total Entries</p>
@@ -388,16 +423,18 @@ function Progress() {
         </div>
       )}
 
-      {/* Progress History */}
       <div className="row">
         <div className="col-12">
           <div className="progress-history-card">
             <div className="progress-history-card-header">
               <div>
                 <h3 className="text-white fw-bold mb-1">Progress History</h3>
-                <p className="text-muted small mb-0">Recent entries for your fitness progress</p>
+                <p className="text-muted small mb-0">
+                  Recent entries for your fitness progress
+                </p>
               </div>
             </div>
+
             {progressList.length > 0 ? (
               <div className="table-responsive progress-history-table-wrapper">
                 <table className="table progress-history-table mb-0">
@@ -416,14 +453,14 @@ function Progress() {
                   <tbody>
                     {progressList.map((entry, index) => (
                       <tr key={index}>
-                        <td>{entry.day_name || entry.createdAt || entry.date || 'Unknown'}</td>
+                        <td>{entry.day_name || entry.createdAt || entry.date || "Unknown"}</td>
                         <td>{entry.weight} kg</td>
-                        <td>{entry.chest || '-'}</td>
-                        <td>{entry.waist || '-'}</td>
-                        <td>{entry.hips || '-'}</td>
-                        <td>{entry.arms || '-'}</td>
-                        <td>{entry.bodyFat || '-'}</td>
-                        <td className="small">{entry.notes || '-'}</td>
+                        <td>{entry.chest || "-"}</td>
+                        <td>{entry.waist || "-"}</td>
+                        <td>{entry.hips || "-"}</td>
+                        <td>{entry.arms || "-"}</td>
+                        <td>{entry.bodyFat || "-"}</td>
+                        <td className="small">{entry.notes || "-"}</td>
                       </tr>
                     ))}
                   </tbody>
