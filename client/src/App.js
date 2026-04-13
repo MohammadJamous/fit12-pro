@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import Workout from "./pages/Workout";
 import Diet from "./pages/Diet";
 import Products from "./pages/Products";
+import Progress from "./pages/Progress";
 
 import PublicOnlyRoute from "./components/PublicOnlyRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -74,6 +75,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Products />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/Progress"
+              element={
+                <ProtectedRoute>
+                  <Progress />
                 </ProtectedRoute>
               }
             />
