@@ -7,12 +7,11 @@ function Progress() {
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState("");
 
-  // Goal state
+ 
   const [goal, setGoal] = useState(null);
   const [goalWeight, setGoalWeight] = useState("");
   const [goalDate, setGoalDate] = useState("");
 
-  // Metrics form
   const [weight, setWeight] = useState("");
   const [chestMeasurement, setChestMeasurement] = useState("");
   const [waistMeasurement, setWaistMeasurement] = useState("");
@@ -26,7 +25,6 @@ function Progress() {
       const res = await getProgress();
       setProgressList(res.data);
       
-      // Try to load goal from localStorage
       const savedGoal = localStorage.getItem("progressGoal");
       if (savedGoal) {
         setGoal(JSON.parse(savedGoal));
@@ -40,13 +38,11 @@ function Progress() {
     loadProgress();
   }, []);
 
-  // Calculate BMI
   const calculateBMI = (weight, height) => {
     if (!height || !weight) return null;
     return (weight / (height * height)).toFixed(1);
   };
 
-  // Calculate progress to goal
   const calculateGoalProgress = () => {
     if (!goal || progressList.length === 0) return null;
 
@@ -68,7 +64,6 @@ function Progress() {
     };
   };
 
-  // Handle adding progress entry and updating goal
   const handleAddProgress = async (e) => {
     e.preventDefault();
     
@@ -119,7 +114,6 @@ function Progress() {
       setMessage("Progress added successfully");
       setMessageType("success");
       
-      // Clear form
       setWeight("");
       setChestMeasurement("");
       setWaistMeasurement("");
@@ -141,7 +135,6 @@ function Progress() {
 
   const goalProgress = calculateGoalProgress();
 
-  // Calculate statistics
   const calculateStats = () => {
     if (progressList.length < 2) return null;
 
