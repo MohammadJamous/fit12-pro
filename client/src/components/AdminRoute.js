@@ -9,7 +9,7 @@ function AdminRoute({ children }) {
   }
 
   if (!user || user.role !== "admin") {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return children;
