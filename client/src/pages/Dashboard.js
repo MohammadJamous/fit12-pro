@@ -1,6 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import { getUsersWithPlans, deleteUser, getRegisteredUsersCount, getOnlineUsersCount, checkApiStatus, updateUserRole, checkDbStatus, getUptime, getDbPing } from "../services/userService";
+import {
+  getUsersWithPlans,
+  deleteUser,
+  getRegisteredUsersCount,
+  getOnlineUsersCount,
+  checkApiStatus,
+  updateUserRole,
+  checkDbStatus,
+  getUptime,
+  getDbPing,
+} from "../services/userService";
 
 function Dashboard() {
   const token = localStorage.getItem("token");
@@ -36,26 +46,49 @@ function Dashboard() {
 
   const loadCounts = useCallback(async () => {
     try {
-      const res = await getRegisteredUsersCount();
+      const res = await getRegisteredUsersCount(token);
       setRegisteredCount(res.data.total || 0);
     } catch (error) {
       console.log(error);
     }
 
     try {
-      const res = await getOnlineUsersCount();
+      const res = await getOnlineUsersCount(token);
       setOnlineCount(res.data.online || 0);
     } catch (error) {
       console.log(error);
     }
-  }, []);
+  }, [token]);
+
+  useEffect(() => {
+    loadUsers();
+    loadCounts();
+  }, [loadUsers, loadCounts]);
+
+  useEffect(() => {
+    socketRef.current = io(
+      process.env.REACT_APP_API_URL || "http://localhost:8080"
+    );
+
+    if (storedUser?.id) {
+      socketRef.current.emit("user-online", storedUser.id);
+    }
+
+    socketRef.current.on("online-users-count", (count) => {
+      setOnlineCount(count);
+    });
+
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, [storedUser?.id]);
 
   const handleCheckApiStatus = async () => {
     setApiStatus("Checking API status...");
     setApiStatusType("info");
 
     try {
-      await checkApiStatus();
+      await checkApiStatus(token);
       setApiStatus("API is working: connection successful.");
       setApiStatusType("success");
     } catch (error) {
@@ -70,7 +103,7 @@ function Dashboard() {
     setDbStatusType("info");
 
     try {
-      const res = await checkDbStatus();
+      const res = await checkDbStatus(token);
       setDbStatus(res.data.status);
       setDbStatusType("success");
     } catch (error) {
@@ -87,20 +120,24 @@ function Dashboard() {
     const startTime = Date.now();
 
     try {
-      await checkApiStatus();
+      await checkApiStatus(token);
       const apiResponseTime = Date.now() - startTime;
 
-      const uptimeRes = await getUptime();
+      const uptimeRes = await getUptime(token);
       const uptime = uptimeRes.data.uptime;
 
-      const dbPingRes = await getDbPing();
+      const dbPingRes = await getDbPing(token);
       const dbPingTime = dbPingRes.data.dbPingTime;
 
-      setResponseTime(`1) Response Time: ${apiResponseTime} ms\n2) Uptime: ${uptime} seconds\n3) DB Ping Time: ${dbPingTime} ms`);
+      setResponseTime(
+        `1) Response Time: ${apiResponseTime} ms\n2) Uptime: ${uptime} seconds\n3) DB Ping Time: ${dbPingTime} ms`
+      );
       setResponseTimeType("success");
     } catch (error) {
       const apiResponseTime = Date.now() - startTime;
-      setResponseTime(`Response failed after ${apiResponseTime} ms. Could not fetch uptime or DB ping.`);
+      setResponseTime(
+        `Response failed after ${apiResponseTime} ms. Could not fetch uptime or DB ping.`
+      );
       setResponseTimeType("danger");
     }
   };
@@ -137,7 +174,10 @@ function Dashboard() {
         await deleteUser(userId, token);
         loadUsers();
       } catch (error) {
-        alert("Failed to delete user: " + (error.response?.data?.message || "Something went wrong"));
+        alert(
+          "Failed to delete user: " +
+            (error.response?.data?.message || "Something went wrong")
+        );
       }
     }
   };
@@ -162,8 +202,12 @@ function Dashboard() {
       </div>
 
       <div className="text-center mb-5">
-        <h1 className="display-4 fw-bold text-white mb-3 admin-dashboard-title">Admin Dashboard</h1>
-        <p className="lead text-muted">Manage users, monitor system status, and control access</p>
+        <h1 className="display-4 fw-bold text-white mb-3 admin-dashboard-title">
+          Admin Dashboard
+        </h1>
+        <p className="lead text-muted">
+          Manage users, monitor system status, and control access
+        </p>
       </div>
 
       <div className="dashboard-panel-card p-4 mb-4">
@@ -176,13 +220,17 @@ function Dashboard() {
         <div className="row g-4 mb-4">
           <div className="col-md-6">
             <div className="dashboard-stat-card p-4 h-100 text-center">
-              <h6 className="text-uppercase text-muted mb-3">Registered Users</h6>
+              <h6 className="text-uppercase text-muted mb-3">
+                Registered Users
+              </h6>
               <p className="display-5 mb-2">{registeredCount}</p>
             </div>
           </div>
           <div className="col-md-6">
             <div className="dashboard-stat-card p-4 h-100 text-center">
-              <h6 className="text-uppercase text-muted mb-3">Current Online Users</h6>
+              <h6 className="text-uppercase text-muted mb-3">
+                Current Online Users
+              </h6>
               <p className="display-5 mb-2">{onlineCount}</p>
             </div>
           </div>
@@ -220,32 +268,41 @@ function Dashboard() {
       </div>
 
       {apiStatus && (
-        <div className={`alert alert-${apiStatusType} rounded-4 py-3 mb-4`} role="alert">
+        <div
+          className={`alert alert-${apiStatusType} rounded-4 py-3 mb-4`}
+          role="alert"
+        >
           {apiStatus}
         </div>
       )}
 
       {dbStatus && (
-        <div className={`alert alert-${dbStatusType} rounded-4 py-3 mb-4`} role="alert">
+        <div
+          className={`alert alert-${dbStatusType} rounded-4 py-3 mb-4`}
+          role="alert"
+        >
           {dbStatus}
         </div>
       )}
 
       {responseTime && (
-        <div className={`alert alert-${responseTimeType} rounded-4 py-3 mb-4`} role="alert">
+        <div
+          className={`alert alert-${responseTimeType} rounded-4 py-3 mb-4`}
+          role="alert"
+        >
           {responseTime}
         </div>
       )}
 
       <div
         style={{
-          background: 'rgba(255, 255, 255, 0.05)',
-          borderRadius: '24px',
-          padding: '40px',
-          backdropFilter: 'blur(18px)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.35)',
-          minHeight: '600px',
+          background: "rgba(255, 255, 255, 0.05)",
+          borderRadius: "24px",
+          padding: "40px",
+          backdropFilter: "blur(18px)",
+          border: "1px solid rgba(255, 255, 255, 0.15)",
+          boxShadow: "0 20px 50px rgba(0, 0, 0, 0.35)",
+          minHeight: "600px",
         }}
       >
         <div className="text-center mb-4">
@@ -265,53 +322,72 @@ function Dashboard() {
             <div className="col-md-6 col-lg-4" key={user.id}>
               <div className="card shadow border-0 rounded-4 p-4 h-100">
                 <h5 className="mb-3">{user.name}</h5>
-                <p><strong>Email:</strong> {user.email}</p>
-                <p><strong>Role:</strong> {user.role}</p>
+                <p>
+                  <strong>Email:</strong> {user.email}
+                </p>
+                <p>
+                  <strong>Role:</strong> {user.role}
+                </p>
+
                 {user.workoutPlan && (
                   <div className="mb-2">
-                    <strong>Workout Goal:</strong> {user.workoutGoal || 'N/A'}<br />
-                    <strong>Workout Level:</strong> {user.workoutLevel || 'N/A'}<br />
+                    <strong>Workout Goal:</strong> {user.workoutGoal || "N/A"}
+                    <br />
+                    <strong>Workout Level:</strong> {user.workoutLevel || "N/A"}
+                    <br />
                     <strong>Workout Plan:</strong>
                     <ul className="mt-1">
                       {user.workoutPlan.map((item, index) => (
-                        <li key={index} className="small">{item}</li>
+                        <li key={index} className="small">
+                          {item}
+                        </li>
                       ))}
                     </ul>
                   </div>
                 )}
+
                 {user.dietPlan && (
                   <div className="mb-2">
-                    <strong>Diet Goal:</strong> {user.dietGoal || 'N/A'}<br />
+                    <strong>Diet Goal:</strong> {user.dietGoal || "N/A"}
+                    <br />
                     <strong>Diet Plan:</strong>
                     <ul className="mt-1">
                       {user.dietPlan.map((item, index) => (
-                        <li key={index} className="small">{item}</li>
+                        <li key={index} className="small">
+                          {item}
+                        </li>
                       ))}
                     </ul>
                   </div>
                 )}
+
                 {user.progress && user.progress.length > 0 && (
                   <div className="mb-3">
                     <strong>Progress:</strong>
                     <ul className="mt-1">
                       {user.progress.map((item, index) => (
-                        <li key={index} className="small">{item.day_name} - {item.weight} kg</li>
+                        <li key={index} className="small">
+                          {item.day_name} - {item.weight} kg
+                        </li>
                       ))}
                     </ul>
                   </div>
                 )}
+
                 <button
                   className="btn btn-danger btn-sm"
                   onClick={() => handleDelete(user.id)}
                 >
                   Remove Account
                 </button>
+
                 <button
                   className="btn btn-outline-light btn-sm ms-2"
                   onClick={() => handleShowRoleOptions(user.id)}
                 >
                   Update User Role
                 </button>
+
                 {roleUpdateTarget === user.id && (
                   <div className="mt-3 p-3 bg-white bg-opacity-10 rounded-4">
                     <p className="mb-2 text-muted small">Select new role:</p>
@@ -322,8 +398,16 @@ function Dashboard() {
                     >
                       {roleUpdating ? "Updating..." : "Admin"}
                     </button>
+
                     {roleUpdateStatus && (
-                      <div className={`alert alert-${roleUpdateStatus.includes("Failed") ? "danger" : "success"} rounded-4 mt-3 py-2 mb-0`} role="alert">
+                      <div
+                        className={`alert alert-${
+                          roleUpdateStatus.includes("Failed")
+                            ? "danger"
+                            : "success"
+                        } rounded-4 mt-3 py-2 mb-0`}
+                        role="alert"
+                      >
                         {roleUpdateStatus}
                       </div>
                     )}
@@ -333,18 +417,22 @@ function Dashboard() {
             </div>
           ))}
         </div>
+
         {filteredUsers.length > cardsPerPage && (
           <div className="d-flex justify-content-between mt-4">
             <button
               className="btn btn-outline-light"
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              onClick={() =>
+                setCurrentPage((prev) => Math.max(prev - 1, 1))
+              }
               disabled={currentPage === 1}
             >
               Previous
             </button>
+
             <button
               className="btn btn-outline-light"
-              onClick={() => setCurrentPage(prev => prev + 1)}
+              onClick={() => setCurrentPage((prev) => prev + 1)}
               disabled={endIndex >= filteredUsers.length}
             >
               Next
@@ -352,7 +440,6 @@ function Dashboard() {
           </div>
         )}
       </div>
-
     </div>
   );
 }
